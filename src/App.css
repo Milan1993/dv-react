@@ -1,0 +1,84 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+body {
+  background-color: #eee;
+}
+
+.node circle {
+  fill: #000;
+}
+
+.node text { font: 10px sans-serif; }
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 2px;
+}
+
+.node-leaf {
+  stroke: '#727E8E'
+}
+
+form {
+  background-color: lightblue;
+  padding: 5px;
+  position: absolute;
+  z-index: 10;
+  visibility: hidden;
+  border-radius: 3px;
+  -webkit-box-shadow: 2px 3px 19px 2px rgba(0,0,0,0.75);
+  -moz-box-shadow: 2px 3px 19px 2px rgba(0,0,0,0.75);
+  box-shadow: 2px 3px 19px 2px rgba(0,0,0,0.75);
+}
+
+button[type="button"] {
+  background-color: lightblue;
+  border: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+button[type="button"]::before {
+  content: 'x';
+  font-weight: 300;
+  font-family: Arial, sans-serif;
+}
