@@ -3,14 +3,6 @@ import * as d3 from 'd3';
 import './App.css';
 import csvData from './data.csv';
 
-const margin = { top: 20, right: 120, bottom: 20, left: 120 },
-  width = 960 - margin.right - margin.left,
-  height = 500 - margin.top - margin.bottom,
-  radius = width / 2;
-
-const colorRange = ['#FFFFFF', '#FF5C5C'];
-const color = d3.scaleLinear().range(colorRange);
-
 const colors = {
   node: {
     level1: '#FF5C5C',
@@ -26,7 +18,7 @@ const colors = {
   }
 }
 
-const schema = {
+const formData = {
   fields: [
     { name: 'name', type: 'text', display: 'Name: ' },
     { name: 'email', type: 'text', display: 'Email: ' },
@@ -35,7 +27,6 @@ const schema = {
 
 function App() {
   const [data, setData] = useState([]);
-  const [leafClicked, setLeafClicked] = useState(false);
   const svgRef = useRef();
 
   useEffect(() => {
@@ -46,30 +37,27 @@ function App() {
       g = svg.append('g')
         .attr('transform', `translate(${(width / 2)},${(height / 2)})`);
 
-    const form = d3.select("body").append("form").style("class", "form");
+    const form = d3.select('body').append('form').style('class', 'form');
 
-    const p = form.selectAll("p")
-      .data(schema.fields)
+    form.selectAll('p')
+      .data(formData.fields)
       .enter()
-      .append("p")
+      .append('p')
       .each(function (d) {
         const self = d3.select(this);
-        const label = self.append("label")
+        self.append('label')
           .text(d.display)
-          .style("width", "50px")
-          .style("display", "inline-block");
+          .style('width', '50px')
+          .style('display', 'inline-block');
 
-        if (d.type == 'text') {
-          const input = self.append("input")
-            .attr({
-              type: function (d) { return d.type; },
-              name: function (d) { return d.name; }
-            });
+        if (d.type === 'text') {
+          self.append("input").attr({ type: d => d.type, name: d => d.name });
         }
       });
 
     form.append("button").attr('type', 'submit').text('Submit');
-    form.append("button").attr('type', 'button').on('click', d => form.style("visibility", "hidden"));
+    form.append("button").attr('type', 'button')
+      .on('click', d => form.style("visibility", "hidden"));
 
     function showForm() {
       form.style("visibility", "visible");
@@ -77,7 +65,7 @@ function App() {
         (d3.event.pageY - 10) + "px").style("left", (d3.event.pageX + 10) + "px");
     }
 
-    var linearGradient = svg.append('defs')
+    const linearGradient = svg.append('defs')
       .append('linearGradient')
       .attr('id', 'linear-gradient')
       .attr('gradientTransform', 'rotate(90)');
@@ -99,23 +87,24 @@ function App() {
     });
 
     function drawViz(vData) {
-      var vWidth = 500;
-      var vHeight = 400;
+      const vWidth = 500;
+      const vHeight = 400;
 
       // Declare d3 layout
-      var vLayout = d3.cluster().size([2 * Math.PI, Math.min(vWidth, vHeight) / 2 - 10])
-        .separation(function (a, b) { return (a.parent == b.parent ? 1 : 5) / a.depth; });;
+      const vLayout = d3.cluster().size([2 * Math.PI, Math.min(vWidth, vHeight) / 2 - 10])
+        .separation(function (a, b) { return (a.parent === b.parent ? 1 : 5) / a.depth; });;
 
       // Layout + Data
-      var vRoot = d3.hierarchy(vData);
+      const vRoot = d3.hierarchy(vData);
       console.log(vRoot)
 
-      var vNodes = vRoot.descendants();
+      const vNodes = vRoot.descendants();
       console.log(vNodes)
 
-      var vLinks = vLayout(vRoot).links();
+      const vLinks = vLayout(vRoot).links();
       console.log(vLinks)
 
+      // Draw paths
       svg.append('g')
         .attr('transform', `translate(${(width / 2)},${(height / 2)})`)
         .attr('fill', 'none')
@@ -129,6 +118,7 @@ function App() {
           .angle(d => d.x)
           .radius(d => d.y));
 
+      // Draw circles
       svg.append('g')
         .attr('transform', `translate(${(width / 2)},${(height / 2)})`)
         .selectAll('circle')
@@ -143,16 +133,16 @@ function App() {
         .attr('r', 2.5)
         .on('click', d => d.data.data.id === 'industry1' ? showForm() : '');
 
-      var node = g.selectAll('.node')
+      const node = g.selectAll('.node')
         .data(vNodes)
         .enter().append('g')
         .attr('class', d => `node ${(d.children ? " node--internal" : " node--leaf")}`);
 
       node.append('text')
         .attr('dy', ".31em")
-        .attr("x", d => d.x < Math.PI === !d.children ? 6 : -6)
+        .attr("x", d => (d.x < Math.PI) === !d.children ? 6 : -6)
         .attr('stroke', d => d.children ? colors.text.parent : colors.text.leaf)
-        .attr("text-anchor", d => d.x < Math.PI === !d.children ? "start" : "end")
+        .attr("text-anchor", d => (d.x < Math.PI) === !d.children ? "start" : "end")
         .attr('transform', d => `
           rotate(${d.x * 180 / Math.PI - 90}) 
           translate(${d.y},${d.x}) 
@@ -167,11 +157,6 @@ function App() {
     <>
       <h1>Welcome to data visualization with D3 and React</h1>
       <svg width="500" height="500" ref={svgRef}></svg>
-
-      {leafClicked && <form>
-        First name: <input type="text" name="firstname" /><br />
-        Last name: <input type="text" name="lastname" />
-      </form>}
     </>
   );
 }
